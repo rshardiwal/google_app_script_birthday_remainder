@@ -3,10 +3,10 @@ function main() {
   var spreadsheetID = "1hUkrpG5CktIfQY8nuzyGVAE44Pzm0QSwv8G6frk1V1c";
   var emailTemplateID = "15cExqOqofM-WO-g7gMToLt-WtmDXTuy0xo8S4ALwppM";
   var birthdayImage = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4Oww2LuWUNidsUpcoRkOo3Vtu4c8q33mIPQ&s';
-  var ccEmails = '';
-  
-  birthdayImageBlob = UrlFetchApp.fetch(birthdayImage).getBlob();
+  // var ccEmailsTemplateID = '1XaqtLMfF65pFpD6ffZDgWapG3XB73RYFXVst1sJ66lc';
+  var ccEmails = 'CAINZProject@tcscomprod.onmicrosoft.com, neha.kohli@tcs.com, T.jenson@tcs.com, rakesh.shardiwal@tcs.com'
 
+  birthdayImageBlob = UrlFetchApp.fetch(birthdayImage).getBlob();
 
   var spreadsheet = SpreadsheetApp.openById(spreadsheetID);
   var sheet = spreadsheet.getActiveSheet();
@@ -22,6 +22,9 @@ function main() {
     Logger.log("document 'email template' not found.");
     return;
   }
+
+  // var ccEmailDocument = DocumentApp.openById(ccEmailsTemplateID);
+  // var ccEmails = ccEmailDocument.getBody().getText() + '';
 
   const emailBody = document.getBody();
 
@@ -53,7 +56,7 @@ function main() {
       emailContent = emailContent.replaceAll('<PROJECT>',project);
       emailContent = emailContent + '<p><img src="cid:birthday_image"/></p>';
       if (personPicture) {
-        emailContent = emailContent + '<p><img src="cid:'+ personPicture.getId() +'"/></p>';
+        emailContent = emailContent + '<p><img width="75%" src="cid:person_image"/></p>';
       }
       emailReminder(name, email, emailContent, ccEmails, personPicture);
     }
@@ -77,13 +80,15 @@ function isBirthdayToday(birthday) {
 // Function to send the email reminder
 function emailReminder(name, bdayemail, emailTemplate, ccEmails, personPicture) {
   var subject = "Happy Birthday " + name;
-  var recipient = Session.getActiveUser().getEmail() + ',' + bdayemail;
+  // var recipient = Session.getActiveUser().getEmail() + ',' + bdayemail;
+  var recipient = bdayemail;
   var body = "" + emailTemplate + "";
   var inlineImages = {};
   inlineImages['birthday_image'] = birthdayImageBlob;
   if (personPicture) {
-    inlineImages[personPicture.getId()] = personPicture.getBlob();
+    inlineImages['person_image'] = personPicture.getBlob();
   }
+
   MailApp.sendEmail({
     to: recipient,
     subject: subject,
